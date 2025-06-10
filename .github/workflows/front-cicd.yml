@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ "main" ]  # אפשר לשנות ל־dev אם צריך
+    branches: [ "master" ]
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         source: "."
-        target: "/home/ubuntu/my-client"  # לדוגמה
+        target: "/home/ubuntu/AWS_Client"
 
     - name: Run post-deploy script
       uses: appleboy/ssh-action@v1.0.0
