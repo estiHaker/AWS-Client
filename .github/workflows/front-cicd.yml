@@ -20,7 +20,15 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         source: "."
         target: "/home/ubuntu/AWS_Client"
-
+    - name: Check build exists
+      run: |
+        if [ ! -d build ]; then
+          echo "no build"
+          exit 1
+        else
+          echo "yes "
+        fi
+        
     - name: Run post-deploy script
       uses: appleboy/ssh-action@v1.0.0
       with:
