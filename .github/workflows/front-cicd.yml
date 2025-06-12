@@ -1,39 +1,72 @@
 name: Deploy to EC2
 
+# on:
+#   push:
+#     branches: [ "master" ]
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
+
+#     - name: Deploy to EC2
+#       uses: appleboy/scp-action@v0.1.4
+#       with:
+#         host: ${{ secrets.EC2_HOST }}
+#         username: ubuntu
+#         key: ${{ secrets.EC2_SSH_KEY }}
+#         source: |
+#           public
+#           src
+#           package.json
+#           package-lock.json
+#         target: "/home/ubuntu/AWS_Client"
+#         rm: true
+
+#     - name: Run post-deploy script
+#       uses: appleboy/ssh-action@v1.0.0
+#       with:
+#         host: ${{ secrets.EC2_HOST }}
+#         username: ubuntu
+#         key: ${{ secrets.EC2_SSH_KEY }}
+#         script: |
+#           cd /home/ubuntu/AWS_Client
+#           npm install
+#           npm run build
+#           sudo cp -r build/* /var/www/html/
+
+
+# name: Deploy React App to EC2
+
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Deploy to EC2
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: |
-          public
-          src
-          package.json
-          package-lock.json
-        target: "/home/ubuntu/AWS_Client"
-        rm: true
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run post-deploy script
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          cd /home/ubuntu/AWS_Client
-          npm install
-          npm run build
-          sudo cp -r build/* /var/www/html/
+      - name: Build React app
+        run: npm run build
+
+      - name: Upload build to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: build
+          target: /home/ubuntu/AWS_Client
+          rm: true
+          
